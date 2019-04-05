@@ -1,57 +1,66 @@
-function randomWorld(size){
-  var world = Array(size)
-  for (var i = 0; i < size; i++) {
-    world[i] = new Array(size);
-    for(var j = 0; j < size ; j++){
-      world[i][j] = ''
-    }
+function genDeck(shuff=true){
+  var cards = []
+  var colors = ['R', 'G', 'B', 'Y']
+  var colorCards = [0,1,2,3,4,5,6,7,8,9,'D2','Skip','Rev']
+  var extras = ['W', 'WD4']
+
+  colors.forEach(function(color){
+    colorCards.forEach(function(colorCard){
+      cards.push(color+':'+colorCard)
+    })
+  })
+
+  extras.forEach(function(extra){
+    cards.push('E:'+extra)
+  })
+
+  if(shuff){
+    shuffle(cards)
   }
-  x_inc = [0, 1 , 0 , -1]
-  y_inc = [1, 0 , -1 , 0]
 
-  var row, col;
+  return cards
+}
 
-  var npits = 1 + Math.floor(Math.random() * size/2);
-  for (var i = 0; i < npits; i++) {
-    var row = Math.floor(Math.random() * size);
-    var col = Math.floor(Math.random() * size);
-    world[row][col] += 'P'
-    for (var j = 0; j < x_inc.length ; j++){
-      if(row + x_inc[j] < size && row + x_inc[j] >=0 ){
-        if(col + y_inc[j] < size && col + y_inc[j] >=0 ){
-          world[row+x_inc[j]][col + y_inc[j]] += 'B'
+function shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
         }
-      }
     }
-  }
+    return this;
+};
 
-  while(isPit(world[row][col])){
-    row = Math.floor(Math.random() * size);
-    col = Math.floor(Math.random() * size);
-    console.log("PIT")
-  }
-  world[row][col] += 'W'
-  for (var j = 0; j < x_inc.length ; j++){
-    if(row + x_inc[j] < size && row + x_inc[j] >=0 ){
-      if(col + y_inc[j] < size && col + y_inc[j] >=0 ){
-        world[row+x_inc[j]][col + y_inc[j]] += 'S'
-      }
+function compatibleCards(card, cards){
+  console.log(card)
+  var cardInfo = card.split(':')
+  var card_color = cardInfo[0]
+  var card_card = cardInfo[1]
+
+  var compat_cards = cards.filter(function(cur_card){
+    cardInfo = cur_card.split(':')
+    var color = cardInfo[0]
+    var card = cardInfo[1]
+    if(color == 'E'){
+      return true;
+    }else if (color == card_color) {
+      return true;
     }
-  }
-
-  while(isPit(world[row][col]) || isWumpus(world[row][col])){
-    row = Math.floor(Math.random() * size);
-    col = Math.floor(Math.random() * size);
-  }
-  world[row][col] += 'G'
-
-  while(isPit(world[row][col]) || isWumpus(world[row][col] || isGoal(world[row][col])){
-    row = Math.floor(Math.random() * size);
-    col = Math.floor(Math.random() * size);
-  }
-  world[row][col] += 'U'
-
-  return world;
+    else if (card == card_card) {
+      return true;
+    }
+    return false;
+  })
+  return compat_cards
 }
 
 function extractVector(cell){
@@ -71,5 +80,8 @@ function isBreeze(cell){
   return extractVector(cell)[3]
 }
 function isGold(cell){
+  return extractVector(cell)[4]
+}
+function isGoal(cell){
   return extractVector(cell)[4]
 }

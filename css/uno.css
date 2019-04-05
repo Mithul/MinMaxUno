@@ -1,0 +1,36 @@
+.card{
+  width:60px;
+  height:40px;
+  padding-top: 20px;
+  display: inline-block;
+  border: 1px solid #01579B;
+  vertical-align: middle;
+  margin: auto;
+  text-align: center;
+  /* color: white; */
+}
+
+.R{
+  background-color: #FF8A80;
+}
+.G{
+  background-color: #B9F6CA;
+}
+.B{
+  background-color: #82B1FF;
+}
+.Y{
+  background-color: #FFFF8D;
+}
+.E{
+  /* background-color: #FDD835; */
+}
+
+.active{
+  color: #607D8B;
+}
+
+i{
+  vertical-align: middle;
+  height:30px;
+}

@@ -10,8 +10,8 @@ class Main extends React.Component {
     return (
       // <button onClick={() => this.setState({ liked: true })}>
       <div>
-        <h1>Welcome to Wumpus World</h1>
-        <WumpusWorld/>
+        <h1>Welcome to Uno</h1>
+        <Uno/>
       </div>
     );
   }
