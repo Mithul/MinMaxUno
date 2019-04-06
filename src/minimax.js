@@ -1,14 +1,18 @@
 import {genDeck, findColor, findCard, findExtra, compatibleCards} from './utils.js'
+import Cytoscape from 'cytoscape';
+import COSEBilkent from 'cytoscape-cose-bilkent';
 import React from 'react';
-import Tree from 'react-tree-graph';
-import 'react-tree-graph/dist/style.css'
+import CytoscapeComponent from 'react-cytoscapejs';
+// import Tree from 'react-tree-graph';
+// import 'react-tree-graph/dist/style.css'
+
+Cytoscape.use(COSEBilkent);
 
 var allCards=genDeck(false)
 class MinMaxNode {
-  constructor(type, card, curHand, visible_cards){
+  constructor(id, type, card, curHand, visible_cards){
     this.children = {}
     this.bestCard = null
-    console.log(type, curHand, visible_cards)
     this.knownCards = curHand.concat(visible_cards)
     this.unkownCards = allCards.slice().remove(...this.knownCards)
     this.curHand = curHand
@@ -16,6 +20,7 @@ class MinMaxNode {
     this.type = type
     this.prob = 1
     this.card = card
+    this.id = id
   }
 
   setProb(prob){
@@ -32,11 +37,10 @@ class MinMaxNode {
     }
     var _this = this
 
-    console.log("NODE", _this.card, moves)
     if(Array.isArray(moves)){
       moves.forEach(function(move){
         var newHand = _this.curHand.slice().remove(move)
-        var mNode = new MinMaxNode("min", move, newHand, _this.knownCards)
+        var mNode = new MinMaxNode(_this.id + "_" + move, "min", move, newHand, _this.knownCards)
 
         var chance_moves = {}
         var p = 0
@@ -49,14 +53,12 @@ class MinMaxNode {
         }
         chance_moves["*:*"] = 1.0 - p
         mNode.findBest(chance_moves)
-        console.log(chance_moves, mNode)
         _this.addChild(move, mNode)
       })
     }else{
-      console.log("NODE1", _this.card, moves)
       for (const [card, prob] of Object.entries(moves)) {
         // var newHand = _this.curHand.slice().remove(move)
-        var mNode = new MinMaxNode("chance", card, _this.curHand, _this.knownCards)
+        var mNode = new MinMaxNode(_this.id + "_" + card, "chance", card, _this.curHand, _this.knownCards)
 
         // var chance_moves = []
         // chance_moves.push(move.split(":")[0] + ":*")
@@ -71,18 +73,28 @@ class MinMaxNode {
     return moves[0]
   }
 
-  serialize(){
+  serialize(type = "nested"){
     var result = []
-    for (const [card, value] of Object.entries(this.children)) {
-      result.push({name: card, children: value.serialize()})
+    if(type === "linear"){
+      result.push({ data : {id: this.id, label: this.type}, position: {x: 100, y: 100}})
     }
-    console.log(result)
+    for (const [card, value] of Object.entries(this.children)) {
+      if(type === "linear"){
+        console.log("T", card)
+        result = result.concat(value.serialize(type))
+        result.push({data: {source: this.id, target: value.id, label: card}})
+        result = [...new Set(result)]
+      }else if (type === "nested") {
+        result.push({name: card, children: value.serialize()})
+      }
+    }
+    console.log("Result", this.id, result)
     return result
   }
 }
 
 export function minimax(possible_cards, card, curHand, visible_cards, callback_node){
-  var root = new MinMaxNode("max", card, curHand, visible_cards);
+  var root = new MinMaxNode("root", "max", card, curHand, visible_cards);
   // possible_cards.map(function(card){
     // root.addChild(card, new MinMaxNode)
   // })
@@ -107,20 +119,36 @@ class MiniMax extends React.Component {
     	children: []
     };
 
+    data = []
+    console.log("T")
     if(Object.keys(this.props.data).length !== 0){
-      console.log(this.props.data)
-      data.children = this.props.data.serialize()
+      // data.children = this.props.data.serialize("linear")
+      data = this.props.data.serialize("linear")
     }
 
+    console.log(this.cy)
+    var _this = this
+    setTimeout(function(){_this.cy.layout({name: 'cose-bilkent'}).run(); console.log("done")}, 100)
     console.log("DATA", data)
-
+    const layout = { name: 'random' };
     return (
       <div>
         <h2>MiniMax</h2>
-        <Tree
-          	data={data}
-          	height={400}
-          	width={400}/>
+        <CytoscapeComponent elements={data} style={{ width: '600px', height: '600px' }}  layout={layout} cy={cy => this.cy = cy}
+          stylesheet={[{
+              selector: 'edge',
+              style: {
+                'label': 'data(label)' // maps to data.label
+              }
+            },
+            {
+                selector: 'node',
+                style: {
+                  'label': 'data(label)' // maps to data.label
+                }
+            }
+          ]}
+        />
       </div>
     );
   }

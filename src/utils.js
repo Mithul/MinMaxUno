@@ -56,7 +56,6 @@ Array.prototype.remove = function() {
 };
 
 export function compatibleCards(card, cards){
-  console.log(card)
   var cardInfo = card.split(':')
   var card_color = cardInfo[0]
   var card_card = cardInfo[1]
