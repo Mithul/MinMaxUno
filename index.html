@@ -1,18 +1,34 @@
 <html>
   <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="/js/lib/react.development.js" crossorigin></script>
     <script src="/js/lib/react-dom.development.js" crossorigin></script>
     <script src="/js/lib/babel.min.js"></script>
+
+    <script src="/js/lib/jquery-3.3.1.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet"> <!--load all styles -->
+    <link href="/css/bootstrap-grid.min.css" rel="stylesheet"> <!--load all styles -->
+
+    <link href="/res/fa-5/css/all.css" rel="stylesheet"> <!--load all styles -->
+    <script defer src="/res/fa-5/js/all.js"></script> <!--load all styles -->
+
     <script src="/js/utils.js"></script>
     <link href="/css/uno.css" rel="stylesheet"> <!--load all styles -->
-     <link href="/res/fa-5/css/all.css" rel="stylesheet"> <!--load all styles -->
-     <script defer src="/res/fa-5/js/all.js"></script> <!--load all styles -->
   </head>
   <body>
     <!-- <i class="fal fa-skull"></i> <!-- uses solid style -->
   <!-- Load our React component. -->
-  <div id="react_main"></div>
-  <script src="/js/uno.jsx" type="text/babel"></script>
-  <script src="/js/react_init.jsx" type="text/babel"></script>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <div id="react_main"></div>
+        <script src="/js/uno.jsx" type="text/babel"></script>
+        <script src="/js/minimax.jsx" type="text/babel"></script>
+        <script src="/js/tree.jsx" type="text/babel"></script>
+        <script src="/js/react_init.jsx" type="text/babel"></script>
+      </div>
+    </div>
+  </div>
   </body>
 </html>
