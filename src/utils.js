@@ -23,6 +23,42 @@ export function genDeck(shuff=true){
   return cards
 }
 
+function hexToRgb(hex) {
+  var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  var result1 = /^#?([a-f\d]{1})([a-f\d]{1})([a-f\d]{1})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16),
+    g: parseInt(result[2], 16),
+    b: parseInt(result[3], 16)
+  } :  {
+    r: parseInt(result1[1], 16)*16,
+    g: parseInt(result1[2], 16)*16,
+    b: parseInt(result1[3], 16)*16
+  };
+}
+
+function map(value, fromSource, toSource, fromTarget, toTarget) {
+  return (value - fromSource) / (toSource - fromSource) * (toTarget - fromTarget) + fromTarget;
+}
+
+export function gradient(startColour, endColour, value, min=0, max=100) {
+  var startRGB = hexToRgb(startColour);
+  var endRGB = hexToRgb(endColour);
+  var percentFade = map(value, min, max, 0, 1);
+  percentFade = Math.pow(percentFade, 1.0/8)
+
+  var diffRed = endRGB.r - startRGB.r;
+  var diffGreen = endRGB.g - startRGB.g;
+  var diffBlue = endRGB.b - startRGB.b;
+
+  diffRed = (diffRed * percentFade) + startRGB.r;
+  diffGreen = (diffGreen * percentFade) + startRGB.g;
+  diffBlue = (diffBlue * percentFade) + startRGB.b;
+
+  var result = "rgb(" + Math.round(diffRed) + ", " + Math.round(diffGreen) + ", " + Math.round(diffBlue) + ")";
+  return result;
+}
+
 export function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));

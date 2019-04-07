@@ -9,7 +9,7 @@ class Uno extends React.Component {
     var deck = genDeck()
     var playerHands = []
     var numPlayers = 4
-    var cardsPerPlayer = 5
+    var cardsPerPlayer = 10
     this.state = { numPlayers: numPlayers, cardsPerPlayer: cardsPerPlayer, deck: deck, playerHands: playerHands};
     for(var i = 0; i<=numPlayers-1; i++){
       playerHands.push(this.getCards(cardsPerPlayer));
@@ -93,7 +93,7 @@ class Uno extends React.Component {
           </div>
         </div>
         <div className="row">
-          <div className="col">
+          <div className="col-md-3">
             {players}
           </div>
           <div className="col">
@@ -153,7 +153,7 @@ class Player extends React.Component {
     if(this.props.turn)
       className = "active"
     return (
-      <div className="col-md-6">
+      <div>
         <h2 className={className}>Player</h2>
         {cards}
       </div>
