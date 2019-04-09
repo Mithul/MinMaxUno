@@ -1,4 +1,4 @@
-import {genDeck, findColor, findCard, findExtra, compatibleCards, gradient} from './utils.js'
+import {genDeck, findColor, findCard, findExtra, compatibleCards, gradient, COLOR, COLOR_CARDS} from './utils.js'
 import Cytoscape from 'cytoscape';
 import COSEBilkent from 'cytoscape-cose-bilkent';
 import dagre from 'cytoscape-dagre';
@@ -10,6 +10,9 @@ import CytoscapeComponent from 'react-cytoscapejs';
 
 Cytoscape.use(COSEBilkent);
 Cytoscape.use( dagre );
+var MAX_DEPTH = 7
+var MAX_VISIBLE_DEPTH = 5
+
 
 var allCards=genDeck(false)
 var BreakException = {};
@@ -68,7 +71,7 @@ class MinMaxNode {
       return
     }
 
-    if(this.id.split("_").length > 6){
+    if(this.id.split("_").length > MAX_DEPTH){
       this.value = -1
       console.log("Truncated")
       return
@@ -84,15 +87,12 @@ class MinMaxNode {
           var chance_moves = {}
           var p = 0
 
-          var colors = ['R', 'G', 'B', 'Y']
-          var colorCards = [0,1,2,3,4,5,6,7,8,9,'D2','Skip','Rev']
-
           console.log(unknownCards)
-          colors.forEach((color) => {
+          COLOR.forEach((color) => {
             chance_moves[color + ":*"] = findColor(color,unknownCards).length/(2*unknownCards.length)
           })
 
-          colorCards.forEach((colorCard) => {
+          COLOR_CARDS.forEach((colorCard) => {
             chance_moves["*:" + colorCard] = findCard(colorCard + "",unknownCards).length/(2*unknownCards.length)
           })
 
@@ -174,7 +174,7 @@ class MinMaxNode {
     for (const [card, value] of Object.entries(this.children)) {
       if(type === "linear"){
         // console.log("T", card)
-        if(this.id.split("_").length < 4){
+        if(this.id.split("_").length < MAX_VISIBLE_DEPTH){
           result = result.concat(value.serialize(type))
           if(this.value === value.value){
             // color = "#B71C1C" // RED

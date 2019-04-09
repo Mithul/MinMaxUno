@@ -1,13 +1,13 @@
 /* eslint no-extend-native: ["error", { "exceptions": ["Array"] }] */
+export var COLOR = ['R', 'G', 'B', 'Y']
+export var COLOR_CARDS = [0,1,2,3,4,5,6,7,8,9,'D2','Skip','Rev']
 
 export function genDeck(shuff=true){
   var cards = []
-  var colors = ['R', 'G', 'B', 'Y']
-  var colorCards = [0,1,2,3,4,5,6,7,8,9,'D2','Skip','Rev']
   var extras = ['W', 'WD4']
 
-  colors.forEach(function(color){
-    colorCards.forEach(function(colorCard){
+  COLOR.forEach(function(color){
+    COLOR_CARDS.forEach(function(colorCard){
       cards.push(color+':'+colorCard)
     })
   })

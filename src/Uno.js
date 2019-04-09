@@ -9,7 +9,7 @@ class Uno extends React.Component {
     var deck = genDeck()
     var playerHands = []
     var numPlayers = 4
-    var cardsPerPlayer = 10
+    var cardsPerPlayer = 3
     this.state = { numPlayers: numPlayers, cardsPerPlayer: cardsPerPlayer, deck: deck, playerHands: playerHands};
     for(var i = 0; i<=numPlayers-1; i++){
       playerHands.push(this.getCards(cardsPerPlayer));
