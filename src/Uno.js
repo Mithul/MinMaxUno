@@ -8,8 +8,8 @@ class Uno extends React.Component {
     super(props);
     var deck = genDeck()
     var playerHands = []
-    var numPlayers = 4
-    var cardsPerPlayer = 3
+    var numPlayers = 3
+    var cardsPerPlayer = 2
     this.state = { numPlayers: numPlayers, cardsPerPlayer: cardsPerPlayer, deck: deck, playerHands: playerHands};
     for(var i = 0; i<=numPlayers-1; i++){
       playerHands.push(this.getCards(cardsPerPlayer));
@@ -54,7 +54,7 @@ class Uno extends React.Component {
      var aCard = this.getCards()
      curHand = curHand.concat(aCard)
    }else{
-     var played_card = minimax(compat_cards, cur_card, curHand, this.state.playArea.concat(curHand), this.updateMinimax)
+     var played_card = minimax(compat_cards, cur_card, playerHands, this.state.turn, this.state.numPlayers, this.updateMinimax)
      curHand.remove(played_card)
      playArea.push(played_card)
 
