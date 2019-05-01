@@ -6,25 +6,45 @@ import './Uno.css';
 class Uno extends React.Component {
   constructor(props) {
     super(props);
-    var deck = genDeck()
-    var playerHands = []
     var numPlayers = 3
-    var cardsPerPlayer = 2
-    this.state = { numPlayers: numPlayers, cardsPerPlayer: cardsPerPlayer, deck: deck, playerHands: playerHands};
+    var cardsPerPlayer = 4
+    var playerHands = []
     for(var i = 0; i<=numPlayers-1; i++){
-      playerHands.push(this.getCards(cardsPerPlayer));
+      playerHands.push([]);
     }
-    var playArea = this.getCards();
-    this.state = { numPlayers: numPlayers, cardsPerPlayer: cardsPerPlayer, deck: deck, playerHands: playerHands, turn: 0, playArea: playArea, minimax: {} };
-    // console.log(this.state.world)
+    this.state = { numPlayers: numPlayers, cardsPerPlayer: cardsPerPlayer, deck: [], playerHands: playerHands, turn: 0, playArea: [], minimax: {}};
 
     this.play = this.play.bind(this);
     this.autoPlay = this.autoPlay.bind(this);
     this.updateMinimax = this.updateMinimax.bind(this);
+    this.init = this.init.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.checkEnded = this.checkEnded.bind(this);
 
   }
 
+  init(){
+    var deck = genDeck()
+    var playerHands = []
+    var numPlayers = this.state.numPlayers
+    var cardsPerPlayer = this.state.cardsPerPlayer
+    this.setState({ deck: deck}, function(){
+      for(var i = 0; i<=numPlayers-1; i++){
+        playerHands.push(this.getCards(cardsPerPlayer));
+      }
+      var playArea = this.getCards();
+      this.setState({ numPlayers: numPlayers, cardsPerPlayer: cardsPerPlayer, deck: deck, playerHands: playerHands, turn: 0, playArea: playArea, minimax: {} });
+    })
+  }
+
   componentDidMount() {
+ }
+
+ handleChange(event){
+   console.debug(event, event.target.name)
+   var update = {}
+   update[event.target.name] = +event.target.value
+   this.setState(update)
  }
 
  getCards(numCards=1){
@@ -37,6 +57,11 @@ class Uno extends React.Component {
 
  updateMinimax(node){
    this.setState({minimax: node})
+ }
+
+ checkEnded(){
+   console.debug(this.state.playerHands)
+   return this.state.playerHands === undefined || this.state.playerHands.map(function(e){ return e.length === 0 }).reduce(function(prev, cur){ return prev || cur }, false)
  }
 
  play(){
@@ -54,7 +79,7 @@ class Uno extends React.Component {
      var aCard = this.getCards()
      curHand = curHand.concat(aCard)
    }else{
-     var played_card = minimax(compat_cards, cur_card, playerHands, this.state.turn, this.state.numPlayers, this.updateMinimax)
+     var played_card = minimax(compat_cards, this.state.playArea, this.state.deck, this.state.playerHands, this.state.turn, this.updateMinimax)
      curHand.remove(played_card)
      playArea.push(played_card)
 
@@ -70,8 +95,10 @@ class Uno extends React.Component {
 
   render() {
     var players = []
+    var game_ended = this.checkEnded()
+    console.debug(game_ended)
     for(var i = 0; i<this.state.numPlayers; i++){
-      players.push(<Player key={i} hand={this.state.playerHands[i]} turn={this.state.turn===i}/>)
+      players.push(<Player key={i} hand={this.state.playerHands[i]} turn={this.state.turn===i} num={i}/>)
     }
     return (
       <div>
@@ -80,8 +107,25 @@ class Uno extends React.Component {
             <h2>Uno Board</h2>
           </div>
           <div className="col">
-            <button onClick={this.play}>Play</button>
-            <button onClick={this.autoPlay}>Auto Play</button>
+            <button className="btn-success btn" disabled={game_ended} onClick={this.play}>Play</button>
+            <button className="btn-warning btn" disabled={game_ended} onClick={this.autoPlay}>Auto Play</button>
+          </div>
+          <div className="col">
+            <div className="row">
+              <div className="col-md-2">
+                <button className="btn-danger btn" onClick={this.init}>Init</button>
+              </div>
+              <div className="col-md-3">
+                <div className="form-group form-inline">
+                  <label>cards <input type="text" defaultValue={this.state.cardsPerPlayer} style={{width:"40px"}} name="cardsPerPlayer" className="form-control" onChange={this.handleChange} /></label>
+                </div>
+              </div>
+              <div className="col-md-2">
+                <div className="form-group form-inline">
+                  <label>players <input type="text" defaultValue={this.state.numPlayers} style={{width:"40px"}} name="numPlayers" className="form-control" onChange={this.handleChange} /></label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
         <div className="row">
@@ -96,8 +140,8 @@ class Uno extends React.Component {
           <div className="col-md-3">
             {players}
           </div>
-          <div className="col">
-            <MiniMax data={this.state.minimax}/>
+          <div className="col-md-9">
+            <MiniMax data={this.state.minimax} updateNode={this.updateMinimax} />
           </div>
         </div>
       </div>
@@ -130,6 +174,7 @@ class PlayArea extends React.Component {
 
   render() {
     var cards = this.props.cards.map(function(card){
+      console.log("PCARD", card)
       return (<Card card={card} key={card}/>)
     })
     return (
@@ -154,7 +199,7 @@ class Player extends React.Component {
       className = "active"
     return (
       <div>
-        <h2 className={className}>Player</h2>
+        <h2 className={className}>Player {this.props.num}</h2>
         {cards}
       </div>
     );

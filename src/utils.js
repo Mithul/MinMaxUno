@@ -1,6 +1,6 @@
 /* eslint no-extend-native: ["error", { "exceptions": ["Array"] }] */
 export var COLOR = ['R', 'G', 'B', 'Y']
-export var COLOR_CARDS = [0,1,2,3,4]//,5,6,7,8,9]//,'D2','Skip','Rev']
+export var COLOR_CARDS = [0,1,2,3,4,5,6,7,8,9,'Skip']
 
 export function genDeck(shuff=true){
   var cards = []
@@ -95,8 +95,9 @@ export function compatibleCards(card, cards){
   var cardInfo = card.split(':')
   var card_color = cardInfo[0]
   var card_card = cardInfo[1]
-
+  // console.log("DD",cards)
   var compat_cards = cards.filter(function(cur_card){
+    // console.log("D",cur_card)
     cardInfo = cur_card.split(':')
     var color = cardInfo[0]
     var card = cardInfo[1]
